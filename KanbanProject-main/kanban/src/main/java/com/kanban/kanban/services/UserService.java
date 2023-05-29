@@ -91,7 +91,10 @@ public class UserService implements IUserService {
             if(!list.contains(projectName)){
                 list.add(projectName);
                 user.setProjectList(list);
-                String message = "Created " + projectName;
+                String message = "You were added to the project: " + projectName;
+                String emailBody="You were added the project "+projectName;
+                notificationProxy.sendRegistrationEmail(user.getEmail(),emailBody);
+
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("Notification", message);
                 jsonObject.put("username", userName);
@@ -119,6 +122,14 @@ public class UserService implements IUserService {
             List<String> list = user_.getProjectList();
             list.remove(projectName);
             user_.setProjectList(list);
+            String message = "You were removed from Project: " + projectName;
+            String emailBody="You were removed from the project "+projectName;
+            notificationProxy.sendRegistrationEmail(user_.getEmail(),emailBody);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("Notification", message);
+            jsonObject.put("username", userName);
+            NotificationDTO notificationDTO = new NotificationDTO(jsonObject);
+            rabbitTemplate.convertAndSend(directExchange.getName(), "user-routing", notificationDTO);
             userRepository.save(user_);
             return true;
         }

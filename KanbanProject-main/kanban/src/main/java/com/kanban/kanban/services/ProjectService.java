@@ -68,8 +68,20 @@ public class ProjectService implements IProjectService {
     public Project addNewTask(String name, Task task) {
 
         Project project = projectRepository.findById(name).get();
-        boolean flag = project.getColumns().get("To Be Done")
-                .stream().anyMatch(t -> t.getName().equals(task.getName()));
+//        boolean flag = project.getColumns().get("To Be Done")
+//                .stream().anyMatch(t -> t.getName().equals(task.getName()));
+
+        boolean flag=false;
+        Map<String, List<Task>> columns=projectRepository.findById(name).get().getColumns();
+
+        for(String key: columns.keySet()){
+            List<Task> tasks =columns.get(key);
+            for(Task eachTask:tasks){
+                if(eachTask.getName().equals(task.getName())){
+                    flag=true;
+                }
+            }
+        }
         if (flag) {
             throw new IllegalArgumentException("Task with the same name already exists");
         }
