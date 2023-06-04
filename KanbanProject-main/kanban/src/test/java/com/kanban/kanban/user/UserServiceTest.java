@@ -5,6 +5,8 @@ import com.kanban.kanban.domain.User;
 import com.kanban.kanban.exception.ProjectNotFoundException;
 import com.kanban.kanban.exception.UserAlreadyExistException;
 import com.kanban.kanban.exception.UserNotFoundException;
+import com.kanban.kanban.proxy.NotificationProxy;
+import com.kanban.kanban.proxy.ProjectProxy;
 import com.kanban.kanban.proxy.UserProxy;
 import com.kanban.kanban.repository.IUserRepository;
 import com.kanban.kanban.services.UserService;
@@ -14,7 +16,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -22,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -37,9 +43,21 @@ public class UserServiceTest {
     @InjectMocks
     private UserService iUserService;
 
+    @Mock
+    private RabbitTemplate rabbitTemplate;
+
+    @Mock
+    private DirectExchange directExchange;
+
+    @Mock
+    private ProjectProxy projectProxy;
+
+    @Mock
+    private NotificationProxy notificationProxy;
     private User user;
     private EmployeeDTO employeeDTO;
 
+    private UserService userService;
     @BeforeEach
     public void setup() {
         List<String> projectList = new ArrayList<String>();
@@ -47,6 +65,10 @@ public class UserServiceTest {
         projectList.add("Project2");
         user = new User("sample", "s@123.com", "sample234", "8987898789", projectList);
         employeeDTO = new EmployeeDTO("sample", "sample234");
+
+        MockitoAnnotations.openMocks(this);
+        userService = new UserService(iUserRepository, userProxy, rabbitTemplate, directExchange, projectProxy, notificationProxy);
+
     }
 
     @AfterEach
