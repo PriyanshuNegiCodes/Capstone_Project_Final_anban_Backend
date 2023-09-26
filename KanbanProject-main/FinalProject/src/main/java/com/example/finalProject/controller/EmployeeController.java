@@ -29,15 +29,11 @@ public class EmployeeController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginCustomer(@RequestBody Employee employee) throws EmployeeNotFoundException {
-        try {
-            Employee fetchedCustomer = iEmployeeServices.getEmployee(employee);
-            if (fetchedCustomer != null) {
-                return new ResponseEntity<>(iSecurityTokenGenerator.generateToken(fetchedCustomer), HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("The Authentication was failed", HttpStatus.EXPECTATION_FAILED);
-            }
-        } catch (EmployeeNotFoundException e) {
-            return new ResponseEntity<>("The Authentication was failed", HttpStatus.NOT_FOUND);
+        Employee fetchedCustomer = iEmployeeServices.getEmployee(employee);
+        if (fetchedCustomer != null) {
+            return new ResponseEntity<>(iSecurityTokenGenerator.generateToken(fetchedCustomer), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("The Authentication was failed", HttpStatus.EXPECTATION_FAILED);
         }
     }
 
@@ -46,11 +42,12 @@ public class EmployeeController {
         return new ResponseEntity<>(iEmployeeServices.getEmployeeByName(name), HttpStatus.OK);
     }
 
-    //    Method for the testing purpose
+    //    Method for the testing purpose only
     public void setISecurityTokenGenerator(ISecurityTokenGenerator securityTokenGenerator) {
         this.iSecurityTokenGenerator = securityTokenGenerator;
     }
 
+//    Setter for the testing purpose
     public void setIEmployeeServices(IEmployeeServices employeeServices) {
         this.iEmployeeServices = employeeServices;
     }

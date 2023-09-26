@@ -38,7 +38,6 @@ public class NotificationService implements INotificationService {
         messages.put(notificationDTO.getJsonObject().get("Notification").toString(), false);
         notification.setNotificationMessage(messages);
         notificationRepository.save(notification);
-
     }
 
     @Override

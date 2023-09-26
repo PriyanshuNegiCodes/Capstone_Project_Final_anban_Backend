@@ -37,7 +37,6 @@ public class MailSender {
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient));
             message.setSubject(subject);
             message.setText(content);
-
             Transport.send(message);
             System.out.println("Email sent successfully!");
         } catch (MessagingException e) {

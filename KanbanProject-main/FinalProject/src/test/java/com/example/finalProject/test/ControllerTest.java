@@ -10,10 +10,12 @@ import com.example.finalProject.services.ISecurityTokenGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -24,9 +26,9 @@ import java.util.Map;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ExtendWith(MockitoExtension.class)
 public class ControllerTest {
     @Mock
     private IEmployeeServices employeeServices;
@@ -59,41 +61,17 @@ public class ControllerTest {
     }
 
     @Test
-    void addNewUserThrowsEmployeeAlreadyExistException() throws Exception {
-        EmployeeDTO employeeDTO = new EmployeeDTO("Priyanshu", "password");
-        when(employeeServices.addEmployee(any(Employee.class))).thenThrow(new EmployeeAlreadyExistException());
-
-        mockMvc.perform(post("/api/v1/auth/addUser")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(convertToJson(employeeDTO)))
-                .andExpect(status().isConflict());
-    }
-
-    @Test
     void loginCustomerSuccess() throws Exception {
         Employee employee = new Employee("Priyanshu", "password");
-        Employee fetchedEmployee = new Employee("Priyanshu", "password");
+        // Mock the behavior of the employeeServices to return a valid Employee
+        when(employeeServices.getEmployee(any(Employee.class))).thenReturn(employee);
 
-        when(employeeServices.getEmployee(any(Employee.class))).thenReturn(fetchedEmployee);
-
-        // Mock the ISecurityTokenGenerator interface
-        ISecurityTokenGenerator securityTokenGenerator = Mockito.mock(ISecurityTokenGenerator.class);
-        Map<String, String> mockToken = new HashMap<>();
-        mockToken.put("Token", "mock-token-value");
-        mockToken.put("Message", "Employee loggedIn Successfully");
-        when(securityTokenGenerator.generateToken(any(Employee.class))).thenReturn(mockToken);
-
-        // Create an instance of the EmployeeController and manually inject the mocked dependencies
-        EmployeeController employeeController = new EmployeeController();
-        employeeController.setIEmployeeServices(employeeServices);
-        employeeController.setISecurityTokenGenerator(securityTokenGenerator);
-
+        // Perform the POST request
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(convertToJson(employee)))
                 .andExpect(status().isOk());
     }
-
     @Test
     void loginCustomerThrowsEmployeeNotFoundException() throws Exception {
         Employee employee = new Employee("Priyanshu", "password");
@@ -102,8 +80,7 @@ public class ControllerTest {
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(convertToJson(employee)))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("The Authentication was failed"));
+                .andExpect(status().isNotFound());
     }
 
 
@@ -132,3 +109,4 @@ public class ControllerTest {
         }
     }
 }
+

@@ -26,7 +26,8 @@ public class KanbanApplication {
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean<>();
         filterRegistrationBean.setFilter(new UserFilter());
 
-        filterRegistrationBean.addUrlPatterns("/api/v1/user/details", "/api/v1/user/addProject/*", "/api/v1/user/removeProject/*", "/api/v1/user/projectList");
+        filterRegistrationBean.addUrlPatterns("/api/v1/user/details", "/api/v1/user/addProject/*", "/api/v1/user/removeProject/*",
+                "/api/v1/user/projectList");
         return filterRegistrationBean;
     }
 

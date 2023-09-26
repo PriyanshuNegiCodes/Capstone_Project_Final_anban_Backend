@@ -21,3 +21,17 @@ public class Config {
                 .build();
     }
 }
+
+
+//way to do the load balancing is mentioned below, the service names are incorrrect
+//        return routeLocatorBuilder.routes()
+//                .route(p -> p.path("/api/v1/auth/**")
+//                        .uri("lb://AUTH-SERVICE"))  // Replace with actual Eureka service name
+//                .route(p -> p.path("/api/v1/project/**")
+//                        .uri("lb://PROJECT-SERVICE"))  // Replace with actual Eureka service name
+//                .route(p -> p.path("/api/v1/user/**")
+//                        .uri("lb://USER-SERVICE"))  // Replace with actual Eureka service name
+//                .route(p -> p.path("/api/v1/notifications/**")
+//                        .uri("lb://NOTIFICATIONS-SERVICE"))  // Replace with actual Eureka service name
+//                .build();
+//    }

@@ -25,6 +25,7 @@ public class IEmployeeServicesImp implements IEmployeeServices {
     @Override
     public Employee getEmployee(Employee employee) throws EmployeeNotFoundException {
         {
+
             if (employeeRepository.findById(employee.getUserName()).isEmpty()) {
                 throw new EmployeeNotFoundException();
             }
